@@ -48,6 +48,19 @@ async function run() {
     finally {
 
     }
+
+    try {
+        const reviewsCollection = client.db('GameMaster').collection('reviews');
+
+        app.post('/review', async (req, res) => {
+            const review = req.body;
+            const result = await reviewsCollection.insertOne(review);
+            res.send(result);
+        })
+    }
+    finally {
+
+    }
 }
 
 run().catch(err => console.error(err));
