@@ -44,6 +44,12 @@ async function run() {
             // console.log(serviceDetails, query);
             res.send(serviceDetails);
         })
+
+        app.post('/addService', async (req, res) => {
+            const service = req.body;
+            const result = await serviceCollection.insertOne(service);
+            res.send(result);
+        })
     }
     finally {
 
@@ -77,10 +83,38 @@ async function run() {
             res.send(reviews);
         })
 
+        app.get('/updateReview/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const review = await reviewsCollection.findOne(query);
+            res.send(review);
+        })
+
+        app.get('/updateReview/', async (req, res) => {
+            updateReview = JSON.parse('{"updateReview":"Wanna update review ?"}');
+            res.send(updateReview);
+            //api for empty id of updateReview bcz at 1st no id is given when useEffect executes
+        })
+
         app.delete('/myReviews/:id', async (req, res) => {
             const id = req.params.id;
-            const query = { _id: ObjectId(id) }
+            const query = { _id: ObjectId(id) };
             const result = await reviewsCollection.deleteOne(query);
+            res.send(result);
+        })
+
+        app.put('/updateReview/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const review = req.body;
+            const option = { upsert: true }
+            const updatedReview = {
+                $set: {
+                    reviewDesc: review.reviewDesc,
+                    reviewRate: review.reviewRate
+                }
+            }
+            const result = await reviewsCollection.updateOne(filter, updatedReview, option);
             res.send(result);
         })
     }
